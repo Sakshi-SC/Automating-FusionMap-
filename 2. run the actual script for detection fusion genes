@@ -1,0 +1,27 @@
+#This script is designed to automate the creation and execution of .oscript files for each trimmed FASTQ file
+
+#!/bin/bash
+
+# Directory containing the trimmed FASTQ files
+INPUT_DIR="/home/simran/sakshi/Input1/output"
+
+# Output directory for the scripts
+SCRIPT_OUTPUT_DIR="/home/simran/sakshi/Fusion_map/scripts_2"
+
+# Create the script output directory if it doesn't exist
+mkdir -p $SCRIPT_OUTPUT_DIR
+
+# Temporary directory for oshell
+TMP_DIR="/home/simran/sakshi/Fusion_map/tmp"
+
+# Iterate over each trimmed FASTQ file in the directory
+for file in $INPUT_DIR/*_trimmed.fq; do
+  # Extract the base name without directory and extension
+  base_name=$(basename "$file" "_trimmed.fq")
+  
+  # Replace placeholders in the template file and create a new script
+  sed "s|{{FASTQ_FILE}}|${base_name}_trimmed.fq|g; s|{{OUTPUT_NAME}}|${base_name}|g" script_template.txt > $SCRIPT_OUTPUT_DIR/${base_name}_script.oscript
+
+  # Execute the generated script using the specified command
+  /opt/mono-6.12.0/bin/mono /opt/oshell/oshell.exe --runscript /home/simran/sakshi/Fusion_map/Index $SCRIPT_OUTPUT_DIR/${base_name}_script.oscript $TMP_DIR
+done
