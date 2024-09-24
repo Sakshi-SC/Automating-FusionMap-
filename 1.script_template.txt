@@ -1,0 +1,49 @@
+Begin NewProject;
+File "/home/simran/sakshi/Fusion_map/FusionDetection.osprj";
+Options /Distributed=True;
+End;
+
+# Begin the MapFusionReads step, which processes the FASTQ files and maps them to detect fusion reads.
+
+Begin MapFusionReads /Namespace=NgsLib;
+Files
+"/home/simran/sakshi/Input1/output/{{FASTQ_FILE}}";
+Reference Reference_library_Arabidopsis;
+ 
+ # Specify the gene model to be used
+GeneModel Arabidopsis_thaliana; 
+Trimming /Mode=TrimByQuality /ReadTrimQuality=2;
+Options
+/GenerateData=True /OutputFusionReads=True /MinimalHit=2 /FusionReportCutoff=1 /ThreadNumberPerJob=15 /FilterBy=DefaultList /DefaultFilterListVersion=v1 /FilterGeneListFileName="/opt/oshell/gene_list" /FilterGeneFamilyFileName="/opt/oshell/gene_family" /GenerateTableland=True /OutputFolder="/home/simran/sakshi/salk_rnaseq/results/fusion_PEReads/";
+Output {{OUTPUT_NAME}} ;
+
+End;
+
+Begin ExportView;
+Project FusionDetection;
+OutputFolder "/home/simran/sakshi/salk_rnaseq";
+End;
+
+Begin SaveProject;
+Project FusionDetection;
+File "/home/simran/sakshi/Fusion_map/FusionDetection.osprj";
+End;
+
+Begin CloseProject;
+Project FusionDetection;
+End;
+
+
+
+# Set various options for fusion read detection:
+# /GenerateData=True : Generate output data.
+# /OutputFusionReads=True : Include fusion read data in the output.
+# /MinimalHit=2 : Requires at least 2 supporting reads for fusion detection.
+# /FusionReportCutoff=1 : The threshold to report a fusion event.
+# /ThreadNumberPerJob=15 : Use 15 threads per job for processing.
+# /FilterBy=DefaultList : Apply default filtering based on known gene lists.
+# /DefaultFilterListVersion=v1 : Specify the version of the default gene filter list.
+# /FilterGeneListFileName : Path to the file containing the default list of genes to filter by.
+# /FilterGeneFamilyFileName : Path to the file containing the list of gene families to filter by.
+# /GenerateTableland=True : Create a summary or report of the detected fusions in a tabular format.
+# /OutputFolder : Define the folder where the fusion PEReads (paired-end reads) output will be stored.
